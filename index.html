@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shift Booster • Team Edition</title>
+  <style>
+    /* ==========================================================================
+       1. DESIGN TOKENS & PALET WARNA KHAS AEON MAGENTA
+       ========================================================================== */
+    :root {
+      --aeon-magenta: #A81B7A;
+      --aeon-magenta-light: #C62592;
+      --aeon-magenta-dark: #83125E;
+      --aeon-tint: #FDF2F8;
+      --aeon-tint-deep: #FCE7F3;
+      --aeon-border: rgba(168, 27, 122, 0.16);
+
+      --gold-accent: #F5B841;
+      --gold-deep: #D97706;
+      --gold-soft: #FEF3C7;
+      --gold-border: rgba(217, 119, 6, 0.24);
+
+      --mint-accent: #10B981;
+      --mint-deep: #059669;
+      --mint-soft: #ECFDF5;
+      --mint-border: rgba(16, 185, 129, 0.32);
+
+      --bg-start: #FDF7FA;
+      --bg-end: #F5E4EF;
+      --card-bg: rgba(255, 255, 255, 0.96);
+
+      --text-main: #2A1624;
+      --text-muted: #6A5061;
+      --text-soft: #8D7384;
+
+      --shadow-card: 0 24px 50px -12px rgba(131, 18, 94, 0.16), 0 4px 16px rgba(168, 27, 122, 0.06);
+      --shadow-btn: 0 10px 22px -6px rgba(168, 27, 122, 0.42);
+      --shadow-soft: 0 6px 16px -4px rgba(131, 18, 94, 0.08);
+      --radius-card: 28px;
+    }
+
+    /* ==========================================================================
+       2. RESET & BASE LAYOUT 
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      min-height: 100%;
+      width: 100%;
+      overflow-x: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text-main);
+      background: linear-gradient(145deg, var(--bg-start) 0%, var(--bg-end) 100%);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 16px;
+      position: relative;
+    }
+
+    /* Kontrol radio & checkbox tersembunyi untuk navigasi murni CSS */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* ==========================================================================
+       3. AMBIENT FLOATING ORBS 
+       ========================================================================== */
+    .ambient-bg {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      will-change: transform;
+      opacity: 0.6;
+    }
+
+    .orb-1 {
+      width: 290px;
+      height: 290px;
+      top: -80px;
+      left: -70px;
+      background: radial-gradient(circle, rgba(198, 37, 146, 0.22) 0%, rgba(198, 37, 146, 0) 70%);
+      animation: orbDriftOne 14s ease-in-out infinite alternate;
+    }
+
+    .orb-2 {
+      width: 330px;
+      height: 330px;
+      bottom: -95px;
+      right: -75px;
+      background: radial-gradient(circle, rgba(245, 184, 65, 0.22) 0%, rgba(245, 184, 65, 0) 70%);
+      animation: orbDriftTwo 16s ease-in-out infinite alternate;
+    }
+
+    .orb-3 {
+      width: 220px;
+      height: 220px;
+      top: 40%;
+      right: 6%;
+      background: radial-gradient(circle, rgba(168, 27, 122, 0.14) 0%, rgba(168, 27, 122, 0) 70%);
+      animation: orbDriftThree 12s ease-in-out infinite alternate;
+    }
+
+    /* ==========================================================================
+       4. APP SHELL, HEADER & STEP PROGRESS PILLS
+       ========================================================================== */
+    .app-shell {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 440px;
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      padding: 22px 20px 18px;
+      overflow: hidden;
+    }
+
+    .app-shell::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--aeon-magenta-dark), var(--aeon-magenta-light), var(--gold-accent));
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .brand-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--aeon-tint);
+      border: 1px solid var(--aeon-border);
+      color: var(--aeon-magenta);
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .brand-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--aeon-magenta);
+      box-shadow: 0 0 0 3px rgba(168, 27, 122, 0.18);
+    }
+
+    .step-pills {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #F9EEF5;
+      padding: 4px;
+      border-radius: 999px;
+      border: 1px solid var(--aeon-border);
+    }
+
+    .step-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+      height: 26px;
+      padding: 0 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-soft);
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.25s ease, color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+    }
+
+    .step-pill:hover {
+      color: var(--aeon-magenta);
+    }
+
+    /* Status aktif untuk masing-masing step pill */
+    #step-1:checked ~ .app-shell .step-pill[for="step-1"],
+    #step-2:checked ~ .app-shell .step-pill[for="step-2"],
+    #step-3:checked ~ .app-shell .step-pill[for="step-3"] {
+      background: linear-gradient(135deg, var(--aeon-magenta), var(--aeon-magenta-light));
+      color: #FFFFFF;
+      box-shadow: 0 4px 10px rgba(168, 27, 122, 0.32);
+      transform: scale(1.03);
+    }
+
+    /* ==========================================================================
+       5. SISTEM HALAMAN 
+       ========================================================================== */
+    .page {
+      display: none;
+    }
+
+    #step-1:checked ~ .app-shell .page-1,
+    #step-2:checked ~ .app-shell .page-2,
+    #step-3:checked ~ .app-shell .page-3 {
+      display: block;
+      animation: pageEnter 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    /* ==========================================================================
+       6. HALAMAN 1: PAKET ENERGI BUAT TIM 
+       ========================================================================== */
+    .hero-stage {
+      position: relative;
+      height: 184px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 4px 0 14px;
+    }
+
+    .aura-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1.5px solid rgba(168, 27, 122, 0.22);
+      background: radial-gradient(circle, rgba(252, 231, 243, 0.55) 0%, rgba(252, 231, 243, 0) 70%);
+      pointer-events: none;
+    }
+
+    .aura-ring-1 {
+      width: 146px;
+      height: 146px;
+      animation: auraPulse 3s ease-in-out infinite;
+    }
+
+    .aura-ring-2 {
+      width: 176px;
+      height: 176px;
+      border-color: rgba(245, 184, 65, 0.28);
+      animation: auraPulse 3s ease-in-out 1.5s infinite;
+    }
+
+    .orbit-circle {
+      position: absolute;
+      width: 162px;
+      height: 162px;
+      border-radius: 50%;
+      border: 1.5px dashed rgba(168, 27, 122, 0.28);
+      animation: orbitSpin 24s linear infinite;
+      pointer-events: none;
+    }
+
+    .float-icon {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: #FFFFFF;
+      border: 1px solid var(--aeon-border);
+      box-shadow: 0 8px 18px rgba(131, 18, 94, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      animation: iconBob 3.2s ease-in-out infinite;
+      user-select: none;
+    }
+
+    .icon-tl { top: 14px; left: 38px; animation-delay: 0s; }
+    .icon-tr { top: 18px; right: 38px; animation-delay: 0.7s; }
+    .icon-bl { bottom: 16px; left: 44px; animation-delay: 1.3s; }
+    .icon-br { bottom: 14px; right: 44px; animation-delay: 1.9s; }
+
+    .envelope-3d {
+      position: relative;
+      width: 112px;
+      height: 78px;
+      border-radius: 16px;
+      background: linear-gradient(145deg, var(--aeon-magenta-light), var(--aeon-magenta-dark));
+      box-shadow: 0 16px 30px -8px rgba(131, 18, 94, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: envelopeFloat 3.6s ease-in-out infinite;
+      overflow: hidden;
+    }
+
+    .envelope-3d::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 44px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.04));
+      clip-path: polygon(0 0, 100% 0, 50% 82%);
+    }
+
+    .envelope-3d::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 42px;
+      background: rgba(82, 8, 57, 0.25);
+      clip-path: polygon(0 100%, 50% 18%, 100% 100%);
+    }
+
+    .gold-seal {
+      position: relative;
+      z-index: 2;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FDE68A 0%, var(--gold-accent) 55%, var(--gold-deep) 100%);
+      border: 2px solid #FFFBEB;
+      box-shadow: 0 4px 12px rgba(131, 18, 94, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      overflow: hidden;
+    }
+
+    .gold-seal::after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 45%;
+      height: 200%;
+      background: rgba(255, 255, 255, 0.65);
+      transform: rotate(25deg);
+      animation: sealGlint 2.8s ease-in-out infinite;
+    }
+
+    .hero-copy {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .hero-title {
+      font-size: 23px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      margin-bottom: 8px;
+      line-height: 1.25;
+    }
+
+    .hero-subtitle {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-muted);
+      padding: 0 6px;
+    }
+
+    .energy-box {
+      background: linear-gradient(135deg, var(--aeon-tint) 0%, #FFF9FC 100%);
+      border: 1px solid var(--aeon-border);
+      border-radius: 18px;
+      padding: 13px 15px;
+      margin-bottom: 18px;
+    }
+
+    .energy-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: var(--aeon-magenta);
+      margin-bottom: 8px;
+    }
+
+    .energy-track {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(168, 27, 122, 0.12);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .energy-fill {
+      height: 100%;
+      width: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--aeon-magenta-dark), var(--aeon-magenta-light), var(--gold-accent));
+      position: relative;
+      overflow: hidden;
+      transform-origin: left center;
+      animation: energyLoad 1.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .energy-fill::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.5) 50%, transparent 100%);
+      animation: shimmerMove 2s infinite;
+    }
+
+    /* ==========================================================================
+       7. HALAMAN 2
+       ========================================================================== */
+    .section-header {
+      margin-bottom: 14px;
+    }
+
+    .section-kicker {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--aeon-magenta);
+      margin-bottom: 4px;
+    }
+
+    .section-title {
+      font-size: 19px;
+      font-weight: 800;
+      line-height: 1.3;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .heartfelt-note {
+      background: linear-gradient(135deg, var(--aeon-tint) 0%, #FFFDF9 100%);
+      border: 1px solid var(--aeon-border);
+      border-radius: 18px;
+      padding: 13px 14px;
+      font-size: 13.2px;
+      line-height: 1.6;
+      color: var(--text-main);
+      margin-bottom: 14px;
+    }
+
+    .reminder-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .reminder-card {
+      background: #FFFFFF;
+      border: 1px solid var(--aeon-border);
+      border-radius: 16px;
+      padding: 11px 9px;
+      text-align: center;
+      box-shadow: var(--shadow-soft);
+      opacity: 0;
+      animation: cardStagger 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      transition: transform 0.22s ease, border-color 0.22s ease;
+    }
+
+    .reminder-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(168, 27, 122, 0.35);
+    }
+
+    .reminder-card:nth-child(1) {
+      animation-delay: 0.06s;
+      background: linear-gradient(180deg, #F0F9FF 0%, #FFFFFF 48%);
+    }
+
+    .reminder-card:nth-child(2) {
+      animation-delay: 0.16s;
+      background: linear-gradient(180deg, var(--mint-soft) 0%, #FFFFFF 48%);
+    }
+
+    .reminder-card:nth-child(3) {
+      animation-delay: 0.26s;
+      background: linear-gradient(180deg, var(--gold-soft) 0%, #FFFFFF 48%);
+    }
+
+    .reminder-title {
+      font-size: 11.8px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 5px;
+      line-height: 1.25;
+    }
+
+    .reminder-desc {
+      font-size: 11px;
+      line-height: 1.45;
+      color: var(--text-muted);
+    }
+
+    .mood-box {
+      background: #FCF7FA;
+      border: 1px solid var(--aeon-border);
+      border-radius: 18px;
+      padding: 13px;
+      margin-bottom: 16px;
+    }
+
+    .mood-prompt {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mood-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 11px;
+    }
+
+    .mood-pill {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 40px;
+      padding: 8px 10px;
+      border-radius: 13px;
+      background: #FFFFFF;
+      border: 1.5px solid var(--aeon-border);
+      color: var(--text-main);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.25;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.22s ease;
+    }
+
+    .mood-pill:hover {
+      border-color: var(--aeon-magenta-light);
+      background: var(--aeon-tint);
+    }
+
+    #mood-1:checked ~ .mood-options label[for="mood-1"],
+    #mood-2:checked ~ .mood-options label[for="mood-2"],
+    #mood-3:checked ~ .mood-options label[for="mood-3"],
+    #mood-4:checked ~ .mood-options label[for="mood-4"] {
+      background: linear-gradient(135deg, var(--aeon-magenta), var(--aeon-magenta-light));
+      border-color: var(--aeon-magenta);
+      color: #FFFFFF;
+      box-shadow: 0 6px 14px -4px rgba(168, 27, 122, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .mood-reply {
+      display: none;
+      background: #FFFFFF;
+      border-left: 3.5px solid var(--aeon-magenta);
+      border-radius: 12px;
+      padding: 11px 12px;
+      font-size: 12.6px;
+      line-height: 1.55;
+      color: var(--text-main);
+      box-shadow: 0 4px 12px rgba(131, 18, 94, 0.06);
+    }
+
+    .mood-reply strong {
+      display: block;
+      color: var(--aeon-magenta);
+      font-size: 12.5px;
+      margin-bottom: 3px;
+    }
+
+    #mood-1:checked ~ .mood-replies .reply-1,
+    #mood-2:checked ~ .mood-replies .reply-2,
+    #mood-3:checked ~ .mood-replies .reply-3,
+    #mood-4:checked ~ .mood-replies .reply-4 {
+      display: block;
+      animation: popIn 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    /* ==========================================================================
+       8. HALAMAN 3
+       ========================================================================== */
+    .ganbatte-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 13px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--gold-soft), #FFFBEB);
+      border: 1px solid var(--gold-border);
+      color: var(--gold-deep);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    .farewell-card {
+      position: relative;
+      background: linear-gradient(155deg, var(--aeon-tint) 0%, #FFFFFF 55%, #FFFDF7 100%);
+      border: 1px solid var(--aeon-border);
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 15px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .farewell-title {
+      font-size: 17.5px;
+      font-weight: 800;
+      line-height: 1.35;
+      color: var(--aeon-magenta-dark);
+      margin-bottom: 9px;
+    }
+
+    .farewell-text {
+      font-size: 13.3px;
+      line-height: 1.62;
+      color: var(--text-main);
+      margin-bottom: 10px;
+    }
+
+    .farewell-text:last-child {
+      margin-bottom: 0;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .voucher-card {
+      position: relative;
+      border-radius: 20px;
+      border: 2px dashed rgba(168, 27, 122, 0.32);
+      background: linear-gradient(135deg, #FFFDF7 0%, var(--aeon-tint) 100%);
+      padding: 15px 16px;
+      text-align: center;
+      margin-bottom: 16px;
+      transition: background 0.35s ease, border-color 0.35s ease, transform 0.25s ease;
+    }
+
+    .voucher-card::before,
+    .voucher-card::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      border: 1px solid var(--aeon-border);
+      transform: translateY(-50%);
+    }
+
+    .voucher-card::before { left: -9px; }
+    .voucher-card::after { right: -9px; }
+
+    .voucher-label-top {
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      margin-bottom: 4px;
+    }
+
+    .voucher-desc {
+      font-size: 12.8px;
+      line-height: 1.5;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .claim-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      min-height: 46px;
+      padding: 11px 16px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--gold-accent), #F59E0B);
+      color: #3D2200;
+      font-size: 13.5px;
+      font-weight: 800;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 8px 18px -6px rgba(217, 119, 6, 0.45);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .claim-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px -6px rgba(217, 119, 6, 0.55);
+    }
+
+    .claim-btn:active {
+      transform: scale(0.98);
+    }
+
+    .claimed-state {
+      display: none;
+    }
+
+    .stamp-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 16px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--mint-accent), var(--mint-deep));
+      color: #FFFFFF;
+      font-size: 13.5px;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      box-shadow: 0 8px 20px -6px rgba(5, 150, 105, 0.45);
+      margin-bottom: 8px;
+    }
+
+    .claimed-note {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--mint-deep);
+      line-height: 1.45;
+    }
+
+    #claim-reward:checked ~ .voucher-card {
+      background: linear-gradient(135deg, var(--mint-soft) 0%, #F0FDF4 100%);
+      border-color: var(--mint-accent);
+      border-style: solid;
+    }
+
+    #claim-reward:checked ~ .voucher-card .unclaimed-state {
+      display: none;
+    }
+
+    #claim-reward:checked ~ .voucher-card .claimed-state {
+      display: block;
+    }
+
+    #claim-reward:checked ~ .voucher-card .stamp-badge {
+      animation: stampDrop 0.45s cubic-bezier(0.18, 0.89, 0.32, 1.28) both;
+    }
+
+    /* ==========================================================================
+       9. TOMBOL NAVIGASI & FOOTER
+       ========================================================================== */
+    .btn-primary {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 18px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--aeon-magenta) 0%, var(--aeon-magenta-light) 100%);
+      color: #FFFFFF;
+      font-size: 14.5px;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: var(--shadow-btn);
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-primary::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 65%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.32), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.55s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 26px -6px rgba(168, 27, 122, 0.5);
+    }
+
+    .btn-primary:hover::after {
+      left: 140%;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.985);
+    }
+
+    .nav-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 12px 16px;
+      border-radius: 16px;
+      background: var(--aeon-tint);
+      border: 1.5px solid var(--aeon-border);
+      color: var(--aeon-magenta);
+      font-size: 13.5px;
+      font-weight: 800;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background: var(--aeon-tint-deep);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary:active {
+      transform: scale(0.985);
+    }
+
+    .app-footer {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(168, 27, 122, 0.16);
+      text-align: center;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-soft);
+      letter-spacing: 0.02em;
+    }
+
+    /* ==========================================================================
+       10. KEYFRAMES ANIMASI (GPU-ACCELERATED)
+       ========================================================================== */
+    @keyframes orbDriftOne {
+      0% { transform: translate3d(0, 0, 0) scale(1); }
+      100% { transform: translate3d(28px, 24px, 0) scale(1.08); }
+    }
+
+    @keyframes orbDriftTwo {
+      0% { transform: translate3d(0, 0, 0) scale(1); }
+      100% { transform: translate3d(-26px, -22px, 0) scale(1.06); }
+    }
+
+    @keyframes orbDriftThree {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-18px, 20px, 0); }
+    }
+
+    @keyframes pageEnter {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 12px, 0) scale(0.985);
+      }
+      100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+    }
+
+    @keyframes auraPulse {
+      0%, 100% {
+        transform: scale(0.94);
+        opacity: 0.55;
+      }
+      50% {
+        transform: scale(1.08);
+        opacity: 0.95;
+      }
+    }
+
+    @keyframes orbitSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes envelopeFloat {
+      0%, 100% {
+        transform: translate3d(0, 0, 0) rotate(-1.5deg);
+      }
+      50% {
+        transform: translate3d(0, -8px, 0) rotate(1.5deg);
+      }
+    }
+
+    @keyframes iconBob {
+      0%, 100% {
+        transform: translate3d(0, 0, 0);
+      }
+      50% {
+        transform: translate3d(0, -6px, 0);
+      }
+    }
+
+    @keyframes sealGlint {
+      0%, 65% { left: -65%; }
+      100% { left: 135%; }
+    }
+
+    @keyframes energyLoad {
+      0% { transform: scaleX(0.12); }
+      100% { transform: scaleX(1); }
+    }
+
+    @keyframes shimmerMove {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    @keyframes cardStagger {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 10px, 0);
+      }
+      100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+    }
+
+    @keyframes popIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.96) translate3d(0, 6px, 0);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translate3d(0, 0, 0);
+      }
+    }
+
+    @keyframes stampDrop {
+      0% {
+        opacity: 0;
+        transform: scale(1.24) rotate(-5deg);
+      }
+      70% {
+        opacity: 1;
+        transform: scale(0.96) rotate(1deg);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) rotate(-1deg);
+      }
+    }
+
+    /* ==========================================================================
+       11. RESPONSIVE ADAPTATION UNTUK LAYAR KECIL & REDUCED MOTION
+       ========================================================================== */
+    @media (max-width: 375px) {
+      .app-shell {
+        padding: 18px 15px 16px;
+        border-radius: 24px;
+      }
+
+      .brand-pill {
+        font-size: 9.5px;
+        padding: 5px 10px;
+      }
+
+      .reminder-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .reminder-card {
+        text-align: left;
+        padding: 10px 12px;
+      }
+
+      .mood-options {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-row {
+        grid-template-columns: 1fr;
+      }
+
+      .btn-secondary {
+        order: 2;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-bg" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <input type="radio" name="page-step" id="step-1" class="sr-only" checked>
+  <input type="radio" name="page-step" id="step-2" class="sr-only">
+  <input type="radio" name="page-step" id="step-3" class="sr-only">
+
+  <!-- Kartu Utama -->
+  <main class="app-shell">
+    <!-- Header & Step Progress Indicator -->
+    <header class="top-bar">
+      <div class="brand-pill">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <span>SHIFT BOOSTER • AEON PEOPLE</span>
+      </div>
+
+      <nav class="step-pills" aria-label="Navigasi Halaman">
+        <label for="step-1" class="step-pill" title="Halaman 1">01</label>
+        <label for="step-2" class="step-pill" title="Halaman 2">02</label>
+        <label for="step-3" class="step-pill" title="Halaman 3">03</label>
+      </nav>
+    </header>
+
+    <!-- ======================================================================
+         HALAMAN 01
+         ====================================================================== -->
+    <section class="page page-1" aria-label="Halaman 1: Paket Energi Buat Tim">
+      <div class="hero-stage" aria-hidden="true">
+        <div class="aura-ring aura-ring-1"></div>
+        <div class="aura-ring aura-ring-2"></div>
+        <div class="orbit-circle"></div>
+
+        <span class="float-icon icon-tl">✨</span>
+        <span class="float-icon icon-tr">☕</span>
+        <span class="float-icon icon-bl">⚡</span>
+        <span class="float-icon icon-br">💜</span>
+
+        <div class="envelope-3d">
+          <div class="gold-seal">✨</div>
+        </div>
+      </div>
+
+      <div class="hero-copy">
+        <h1 class="hero-title">Paket Energi Buat Tim</h1>
+        <p class="hero-subtitle">
+          Titipan semangat kecil sebelum mulai atau di tengah padatnya shift kasir hari ini. Semoga langkahmu ringan dan antreannya lancar terus!
+        </p>
+      </div>
+
+      <div class="energy-box">
+        <div class="energy-header">
+          <span>CHARGING GOOD VIBES</span>
+          <span>100% READY FOR SHIFT</span>
+        </div>
+        <div class="energy-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+          <div class="energy-fill"></div>
+        </div>
+      </div>
+
+      <label for="step-2" class="btn-primary">
+        <span>Buka Paket Semangat →</span>
+      </label>
+    </section>
+
+    <!-- ======================================================================
+         HALAMAN 02
+         ====================================================================== -->
+    <section class="page page-2" aria-label="Halaman 2: Pengingat dan Mood Booster">
+      <div class="section-header">
+        <span class="section-kicker">Pengingat &amp; Mood Booster</span>
+        <h2 class="section-title">Terima Kasih Udah Bertahan Sejauh Ini</h2>
+      </div>
+
+      <p class="heartfelt-note">
+        Berdiri berjam-jam di balik mesin scan sambil tetap menjaga senyum dan kesabaran itu bukan hal yang mudah. Kalau hari ini terasa agak berat, pelan-pelan aja—kamu udah melakukan yang terbaik.
+      </p>
+
+      <!-- Tiga Kartu Pengingat Berurutan -->
+      <div class="reminder-grid">
+        <article class="reminder-card">
+          <h3 class="reminder-title">Stay Hydrated 💧</h3>
+          <p class="reminder-desc">Sempatin teguk air putih pas antrean lagi agak renggang ya.</p>
+        </article>
+
+        <article class="reminder-card">
+          <h3 class="reminder-title">Napas Pelan 🌿</h3>
+          <p class="reminder-desc">Tarik napas pelan sebentar kalau suasana lagi terasa padat.</p>
+        </article>
+
+        <article class="reminder-card">
+          <h3 class="reminder-title">Kamu Keren ⭐</h3>
+          <p class="reminder-desc">Tetap sabar dan jangan lupa senyum <i>hermes,</i>yaa.</  p>
+        </article>
+      </div>
+
+      <!-- Interaktif Kondisi Shift -->
+      <div class="mood-box">
+        <div class="mood-prompt">
+          <span>💬</span>
+          <span>Lagi di fase shift yang mana?</span>
+        </div>
+
+        <input type="radio" name="shift-mood" id="mood-1" class="sr-only" checked>
+        <input type="radio" name="shift-mood" id="mood-2" class="sr-only">
+        <input type="radio" name="shift-mood" id="mood-3" class="sr-only">
+        <input type="radio" name="shift-mood" id="mood-4" class="sr-only">
+
+        <div class="mood-options">
+          <label for="mood-1" class="mood-pill">Antrean Lagi Panjang</label>
+          <label for="mood-2" class="mood-pill">Kaki Mulai Pegal</label>
+          <label for="mood-3" class="mood-pill">Customer Lagi Ribet</label>
+          <label for="mood-4" class="mood-pill">Bad day, ngelakuin kesalahan</label>
+        </div>
+
+        <div class="mood-replies">
+          <div class="mood-reply reply-1">
+            <strong>Fokus satu per satu ya! 🛒</strong>
+            Speed memang penting, tapi jangan panik yaa. Scan satu keranjang, senyum seperlunya, tahu-tahu barisan panjangnya udah habis.
+          </div>
+
+          <div class="mood-reply reply-2">
+            <strong>Kaki capekmu valid banget 👟</strong>
+            Coba geser tumpuan berat badan pelan-pelan atau renggangkan bahu sebentar. Sebentar lagi waktu istirahat atau pulang tiba!
+          </div>
+
+          <div class="mood-reply reply-3">
+            <strong>Jangan dimasukin ke hati ya 🤍</strong>
+            Kamu udah melayani dengan sopan dan profesional. Tarik napas dalam, biarin lelahnya lewat begitu transaksi selesai.
+          </div>
+
+          <div class="mood-reply reply-4">
+            <strong>It's Okay! 🌙</strong>
+            Melakukan kesalahan itu wajar, tapi diperhatikan supaya nggak terulang lagi. Jangan lupa catat hal-hal yang bisa diperbaiki, dan tetap semangat buat shift berikutnya!
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <label for="step-1" class="btn-secondary">← Kembali</label>
+        <label for="step-3" class="btn-primary">Lanjut →</label>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         HALAMAN 03: APRESIASI, PAMIT SINGKAT & SELF-REWARD
+         ====================================================================== -->
+    <section class="page page-3" aria-label="Halaman 3: Apresiasi, Pamit Singkat dan Self-Reward">
+      <div class="ganbatte-badge">GANBATTE &amp; TERIMA KASIH ✨</div>
+
+      <article class="farewell-card">
+        <h2 class="farewell-title">Mohon Pamit, Semangat Terus Ya! 🌸</h2>
+        <p class="farewell-text">
+          Terima kasih banyak buat kebersamaan, bantuan, dan tawa kecil di sela-sela jam sibuk selama ini. Feel so happy to have worked with such a great team!
+        </p>
+        <p class="farewell-text">
+          Sehat-sehat terus buat kalian semua yang masih bertugas. Semoga setiap pekerjaan-nya dimudahkan, rezekinya lancar, dan selalu dikelilingi energi baik!
+        </p>
+      </article>
+
+      <!-- Voucher Self-Reward Interaktif -->
+      <input type="checkbox" id="claim-reward" class="sr-only">
+      <div class="voucher-card">
+        <div class="voucher-label-top">POCKET VOUCHER • AFTER SHIFT</div>
+
+        <div class="unclaimed-state">
+          <p class="voucher-desc">
+            Pulang nanti jangan lupa kasih apresiasi kecil buat diri sendiri—entah jajan favorit atau istirahat lebih awal.
+          </p>
+          <label for="claim-reward" class="claim-btn">
+            <span>Klaim Self-Reward Pulang Shift ✨</span>
+          </label>
+        </div>
+
+        <div class="claimed-state">
+          <div class="stamp-badge">SELF-REWARD DIKLAIM! 🎉</div>
+          <p class="claimed-note">
+            Sah berlaku hari ini! Pulang shift nanti wajib jajan enak atau istirahat tanpa rasa bersalah ya.
+          </p>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <label for="step-2" class="btn-secondary">← Kembali</label>
+        <label for="step-1" class="btn-primary">Ulangi dari Awal ↺</label>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      Salam hangat, Anggeline
+    </footer>
+  </main>
+</body>
+</html>
